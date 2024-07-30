@@ -114,3 +114,42 @@ rule cellranger_annotation_rds:
     conda: '../envs/rbase.yaml'
     script:
         '../scripts/metadata_rds.R'
+
+
+rule star_index_GRCh38_2020A_HIVADA_gencode32:
+    input:
+        genome_fna = [
+            'databases/indexes/cellranger/refdata-gex-GRCh38-2020-A/fasta/genome.fa',
+            'databases/sequences/genbank/AF004394.1.fna',
+            'databases/sequences/genbank/AY245535.1.fna',
+        ],
+        genome_gtf = 'databases/indexes/cellranger/refdata-gex-GRCh38-2020-A/genes/genes.gtf'
+    output:
+        protected(directory("databases/indexes/STAR_GRCh38_2020A_HIVADA_gencode32")),
+        expand('databases/indexes/STAR_GRCh38_2020A_HIVADA_gencode32/{basename}',
+            basename = star_index_files
+        )
+    params:
+        sjdbOverhang=100,
+        genomeDir = lambda wildcards, output: os.path.dirname(output[1])
+    conda: "../envs/star.yaml"
+    threads: snakemake.utils.available_cpu_count()
+    shell:
+        '''
+tdir=$(mktemp -d {config[local_tmp]}/{rule}.XXXXXX)
+echo "temporary directory: $tdir"
+cat {input.genome_fna} > $tdir/genome.fna
+cat {input.genome_gtf} > $tdir/transcripts.gtf
+
+mkdir -p $tdir/starindex
+STAR\
+ --runThreadN {threads}\
+ --runMode genomeGenerate\
+ --genomeDir $tdir/starindex\
+ --genomeFastaFiles $tdir/genome.fna\
+ --sjdbGTFfile $tdir/transcripts.gtf\
+ --sjdbOverhang {params.sjdbOverhang}
+
+mkdir -p {output[0]}
+cp $tdir/starindex/* {output[0]}
+        '''

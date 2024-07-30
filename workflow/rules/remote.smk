@@ -39,3 +39,14 @@ rule download_remotefile:
 curl -L {params[0][url]} > {output[0]}
 echo {params[0][md5]}  {output[0]} | md5sum -c -
         '''
+
+rule download_genbank:
+    output:
+        'databases/remotefiles/genbank/{acc}.gbk'
+    wildcard_constraints:
+        acc = '([A-Z]\d{5}|[A-Z]{2}\d{6}|[A-Z]{2}\d{8}|[A-Z]{2}_\d{6,8})(\.\d{1,3})?'
+    conda: '../envs/entrez.yaml'
+    shell:
+        '''
+efetch -db nuccore -id {wildcards.acc} -format gb > {output[0]}
+        '''
