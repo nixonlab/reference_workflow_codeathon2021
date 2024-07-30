@@ -66,7 +66,7 @@ rule cellranger_annotation_gtf:
     shell:
         '''
 mkdir -p $(dirname {output.chroms})
-gunzip -c {input.allgtf} | grep -v '^#' | cut -f1 | uniq > {output.chroms}
+cat {input.allgtf} | grep -v '^#' | cut -f1 | uniq > {output.chroms}
 
 (
     set +o pipefail
@@ -91,7 +91,7 @@ rule cellranger_annotation_metadata:
     wildcard_constraints:
         refver = f'({"|".join(config["cellranger_versions"])})'
     params:
-        out_prefix = lambda wc: f'databases/annotations/cellranger-{wc.refver}/'
+        out_prefix = lambda wc: f'databases/annotations/cellranger.{wc.refver}/'
     shell:
         '''
 workflow/scripts/gtf_metadata.py {input.allgtf} {params.out_prefix}

@@ -9,3 +9,4 @@ __pycache__/
 workflow/scripts/_*
 resources/remotefile_db.json
 tmp*
+.DS_Store

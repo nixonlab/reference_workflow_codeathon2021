@@ -1,7 +1,11 @@
 #! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import sys
 import re
 import requests
 import json
+import yaml
 
 def gencode_url(gencode_release):
     base_url = 'http://ftp.ebi.ac.uk/pub/databases/gencode'
@@ -11,32 +15,19 @@ def gencode_url(gencode_release):
         return f'{base_url}/Gencode_human/release_{gencode_release}'
 
 def build_remote_db(
-        outfn: str,
-        from_config: dict[str, dict],
-        gencode_releases: list[str],
-        remote_checksums: dict[str, dict]
+        remote_files: dict[str, dict],
+        remote_filesets: dict[str, dict],
+        gencode_versions: list[str],
 ):
 
     db = {}
 
-    """ Add items in config """
-    db = {**db, **from_config}
+    """ Individual remote files """
+    db = {**db, **remote_files}
 
-    """ Add GENCODE versions """
-    for gr in gencode_releases:
-        print(f'Adding remote information for GENCODE v{gr}')
-        _baseurl = gencode_url(gr)
-        r = requests.get(f'{_baseurl}/MD5SUMS')
-        _iter = (row.split() for row in r.text.split('\n') if row)
-        for _md5, _fn in _iter:
-            db[_fn] = {
-                'url': f'{_baseurl}/{_fn}',
-                'md5': _md5,
-            }
-
-    """ Add remote checksums """
-    for n, d in remote_checksums.items():
-        print(f'Adding remote information for {n}')
+    """ Remote file sets """
+    for n, d in remote_filesets.items():
+        print(f'Adding remote information for {n}', file=sys.stderr)
         _baseurl = d['baseurl']
         r = requests.get(d['checksum_url'])
         _iter = re.findall(r"(?P<_md5>[a-fA-F\d]{32})\s+(?P<_fn>\S+)", r.text)
@@ -49,18 +40,40 @@ def build_remote_db(
                 'md5': _md5,
             }
 
-    # for k,v in db.items():
-    #     print(f'{k}:\n    url: "{v["url"]}"\n    md5: "{v["md5"]}"')
+    """ Add GENCODE versions """
+    for gr in gencode_versions:
+        print(f'Adding remote information for GENCODE v{gr}', file=sys.stderr)
+        _baseurl = gencode_url(gr)
+        r = requests.get(f'{_baseurl}/MD5SUMS')
+        _iter = (row.split() for row in r.text.split('\n') if row)
+        for _md5, _fn in _iter:
+            db[_fn] = {
+                'url': f'{_baseurl}/{_fn}',
+                'md5': _md5,
+            }
 
-    with open(outfn, 'w') as outh:
-        json.dump(db, outh, indent=4)
-    return
+    return db
 
 
+def main(args):
+    data = yaml.safe_load(args.remote_yaml)
+    outdb = build_remote_db(
+        data['remote_files'],
+        data['remote_filesets'],
+        data['gencode_versions']
+    )
+    json.dump(outdb, args.remotedb_json, indent=4)
 
-build_remote_db(
-    snakemake.output[0],
-    snakemake.config['remotefiles'],
-    snakemake.config['gencode_versions'],
-    snakemake.config['remote_checksums']
-)
+
+if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser(description='Build remote file database')
+    parser.add_argument('remote_yaml',
+                        nargs='?', type=argparse.FileType('r'),
+                        default=sys.stdin,
+                        help="Input YAML file. Default: stdin.")
+    parser.add_argument('remotedb_json',
+                        nargs='?', type=argparse.FileType('w'),
+                        default=sys.stdout,
+                        help="Output JSON file. Default: stdout.")
+    main(parser.parse_args())

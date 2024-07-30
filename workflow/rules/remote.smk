@@ -1,19 +1,27 @@
 import json
+from snakemake import WorkflowError
+# localrules: build_remotefile_db
+# rule build_remotefile_db:
+#     output:
+#         'resources/remotefile_db.json'
+#     input:
+#         'config/config.yaml'
+#     script:
+#         '../scripts/build_remotefile_db.py'
 
-localrules: build_remotefile_db
-rule build_remotefile_db:
-    output:
-        'resources/remotefile_db.json'
-    input:
-        'config/config.yaml'   
-    script:
-        '../scripts/build_remotefile_db.py'
 
-
-def getparams_download_remote_db(wildcards):
-    with open(rules.build_remotefile_db.output[0], 'r') as dbfh:
+def getparams_download_remote_db(wildcards, input, output):
+    with open(input[0], 'r') as dbfh:
         db = json.load(dbfh)
-    return dict(db[wildcards.f])
+    if wildcards.f in db:
+        return dict(db[wildcards.f])
+    else:
+        raise WorkflowError(f"""
+        Remote file '{wildcards.f}' not found in remotefile database. The database
+        may need to be rebuilt. For example:
+            $  workflow/scripts/build_remotefile_db.py config/remote.yaml > resources/remotefile_db.json
+        Also ensure that the file is included in `config/remote.yaml`.
+        """)
 
 rule download_remotefile:
     """ Downloads a remote file and checks the md5sum.
@@ -23,7 +31,7 @@ rule download_remotefile:
     output:
         'databases/remotefiles/{f}'
     input:
-        rules.build_remotefile_db.output
+        ancient(config['remotefile_db'])
     params:
         getparams_download_remote_db
     shell:
@@ -31,4 +39,3 @@ rule download_remotefile:
 curl -L {params[0][url]} > {output[0]}
 echo {params[0][md5]}  {output[0]} | md5sum -c -
         '''
-

@@ -1,0 +1,101 @@
+### Remote files ###
+# Contains single downloadable files to be added to remotefile_db.json
+# "destination" -> the destination file name
+#     "url" -> the file download URL
+#     "md5" -> the expected MD5 checksum of the downloaded file
+remote_files:
+    GRCh38.d1.vd1.fa.tar.gz:
+        url: "https://api.gdc.cancer.gov/data/254f697d-310d-4d7d-a27b-27fbf767a834"
+        md5: "3ffbcfe2d05d43206f57f81ebb251dc9"
+    GRCh38.d1.vd1_BWA.tar.gz:
+        url: "https://api.gdc.cancer.gov/data/25217ec9-af07-4a17-8db9-101271ee7225"
+        md5: "015f5223bddd93b6e8f7a038c171f7be"
+    GRCh38.d1.vd1_GATK_indices.tar.gz:
+        url: "https://api.gdc.cancer.gov/data/2c5730fb-0909-4e2a-8a7a-c9a7f8b2dad5"
+        md5: "f64be73587a7f376c0d8353f1636dca7"
+    star.index.genome.d1.vd1.gtfv22.tar.gz:
+        url: "https://api.gdc.cancer.gov/data/50e11f67-ceb4-41f9-a73c-2a5aa9ed0af0"
+        md5: "7c2e6bd5767239c7c9eb618cd03bcadb"
+    gencode.v22.annotation.gtf.gz:
+        url: "https://api.gdc.cancer.gov/data/25aa497c-e615-4cb7-8751-71f744f9691f"
+        md5: "291330bdcff1094bc4d5645de35e0871"
+    gencode.v22.annotation.flattened.gff:
+        url: "https://api.gdc.cancer.gov/data/45fd5d98-b5cd-45ff-9d02-fc3f260532cc"
+        md5: "5a843572abc2321e42eaafbe99c47363"
+    gencode.gene.info.v22.tsv:
+        url: "https://api.gdc.cancer.gov/data/b011ee3e-14d8-4a97-aed4-e0b10f6bbe82"
+        md5: "0a3f1d9b0a679e2a426de36d8d74fbf9"
+    retro.hg38.v1.gtf:
+        url: "https://github.com/mlbendall/telescope_annotation_db/raw/master/builds/retro.hg38.v1/transcripts.gtf"
+        md5: "c07cf115c1f957b3020efc547f3847fa"
+    retro.hg38.v1.tsv.gz:
+        url: "https://github.com/mlbendall/telescope_annotation_db/raw/master/builds/retro.hg38.v1/genes.tsv.gz"
+        md5: "b3ca6d3705d030742255d216e25dfc1d"
+    refdata-gex-GRCh38-2020-A.tar.gz:
+        url: "https://cf.10xgenomics.com/supp/cell-exp/refdata-gex-GRCh38-2020-A.tar.gz"
+        md5: "dfd654de39bff23917471e7fcc7a00cd"
+    refdata-gex-mm10-2020-A.tar.gz:
+        url: "https://cf.10xgenomics.com/supp/cell-exp/refdata-gex-mm10-2020-A.tar.gz"
+        md5: "886eeddde8731ffb58552d0bb81f533d"
+    refdata-gex-GRCh38-and-mm10-2020-A.tar.gz:
+        url: "https://cf.10xgenomics.com/supp/cell-exp/refdata-gex-GRCh38-and-mm10-2020-A.tar.gz"
+        md5: "c34194518ef19a4d0c409b598bb7363e"
+    refdata-cellranger-vdj-GRCh38-alts-ensembl-7.1.0.tar.gz:
+        url: "https://cf.10xgenomics.com/supp/cell-vdj/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.1.0.tar.gz"
+        md5: "65b5b033723b07fc1bb5375e5645761c"
+    refdata-cellranger-vdj-GRCm38-alts-ensembl-7.0.0.tar.gz:
+        url: "https://cf.10xgenomics.com/supp/cell-vdj/refdata-cellranger-vdj-GRCm38-alts-ensembl-7.0.0.tar.gz"
+        md5: "c6f41db8f67aa83b04d64ba1ae96e681"
+    refdata-cellranger-arc-GRCh38-2020-A-2.0.0.tar.gz:
+        url: "https://cf.10xgenomics.com/supp/cell-atac/refdata-cellranger-arc-GRCh38-2020-A-2.0.0.tar.gz"
+        md5: "2f12f6016197869e21e5559827002716"
+
+### Remote file sets ###
+# Contains sets of downloadable files to be added to remotefile_db.json
+# "prefix" -> All files in the set will have this prefix
+#     "baseurl" -> the base URL for file download
+#     "checksum_url" -> the expected MD5 checksum of the downloaded file
+# The file set is converted to individual files in remotefile_db.json by
+# parsing the MD5 checksum file. Destination file name is created by stripping
+# the leading "./" and replacing any other "/" with ".". The download URL is
+# created by adding the base URL to the file path from the MD5 file.
+remote_filesets:
+    GCA_000001405.15_GRCh38:
+        baseurl: "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids"
+        checksum_url: "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/md5checksums.txt"
+    GCA_009914755.4_T2T-CHM13v2.0:
+        baseurl: "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/009/914/755/GCA_009914755.4_T2T-CHM13v2.0"
+        checksum_url: "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/009/914/755/GCA_009914755.4_T2T-CHM13v2.0/md5checksums.txt"
+    T2T.CHM13.assemblies.analysis_set:
+        baseurl: "https://s3-us-west-2.amazonaws.com/human-pangenomics/T2T/CHM13/assemblies/analysis_set"
+        checksum_url: "https://s3-us-west-2.amazonaws.com/human-pangenomics/T2T/CHM13/assemblies/analysis_set/README.txt"
+
+### Gencode file sets ###
+# Special case of remote file sets
+# Gencode versions can be specified just using the version number - numeric
+# for human, "M\d+" for mouse
+gencode_versions:
+    - "21"
+    - "22"
+    - "23"
+    - "36"
+    - "38"
+    - "39"
+    - "40"
+    - "41"
+    - "42"
+    - "43"
+    - "44"
+    - "45"
+    - "46"
+    - "M25"
+    - "M32"
+    - "M35"
+
+#
+#cellranger_versions:
+#    - "gex-GRCh38-2020-A"
+#    - "gex-mm10-2020-A"
+#    - "gex-GRCh38-and-mm10-2020-A"
+#    - "cellranger-vdj-GRCh38-alts-ensembl-7.1.0"
+
