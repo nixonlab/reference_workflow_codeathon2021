@@ -57,6 +57,7 @@ samtools faidx {output[0]}
 picard CreateSequenceDictionary -R {output[0]}
         '''
 
+localrules: genbank_fasta
 rule genbank_fasta:
     output:
         'databases/sequences/genbank/{acc}.fna'
@@ -64,7 +65,7 @@ rule genbank_fasta:
         rules.download_genbank.output[0]
     wildcard_constraints:
         acc = '([A-Z]\d{5}|[A-Z]{2}\d{6}|[A-Z]{2}\d{8}|[A-Z]{2}_\d{6,8})(\.\d{1,3})?'
-    conda: '../envs/entrez.yaml'
+    conda: '../envs/biopython.yaml'
     shell:
         '''
 workflow/scripts/gbk2fna.py {input[0]} {output[0]}

@@ -10,3 +10,4 @@ workflow/scripts/_*
 resources/remotefile_db.json
 tmp*
 .DS_Store
+Log.out

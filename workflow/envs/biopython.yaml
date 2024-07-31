@@ -1,7 +1,7 @@
-name: entrez
+name: biopython
 channels:
   - bioconda
   - conda-forge
   - defaults
 dependencies:
-  - entrez-direct
+  - biopython

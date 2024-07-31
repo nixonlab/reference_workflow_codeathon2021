@@ -40,6 +40,7 @@ curl -L {params[0][url]} > {output[0]}
 echo {params[0][md5]}  {output[0]} | md5sum -c -
         '''
 
+localrules: download_genbank
 rule download_genbank:
     output:
         'databases/remotefiles/genbank/{acc}.gbk'
